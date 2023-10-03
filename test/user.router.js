@@ -60,16 +60,18 @@ describe('User REST API', () => {
   })
 
   describe('GET /user', ()=> {
+    const username = 'sergkudinov';
     db.hgetall(username, (err, user) => {
       if (err) {
-        return callback(err, null);
+        done(err); // Handle the error
+      } else if (!user) {
+        done(new Error("User not found")); // Handle the case when the user is not found
+      } else {
+        // Perform assertions based on the 'user' data
+        chai.expect(user).to.have.property('username', username);
+        // Add more assertions here
+        done(); // Signal that the test is complete
       }
-      
-      if (!user) {
-        return callback(new Error("User not found"), null);
-      }
-      
-      callback(null, user);
     });
     // TODO Create test for the get method
   })
