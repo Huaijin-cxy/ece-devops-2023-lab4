@@ -6,16 +6,16 @@ const db = require('../src/dbClient')
 chai.use(chaiHttp)
 
 describe('User REST API', () => {
-  
-    beforeEach(() => {
-      // Clean DB before each test
-      db.flushdb()
-    })
-    
-    after(() => {
-      app.close()
-      db.quit()
-    })
+
+  beforeEach(() => {
+    // Clean DB before each test
+    db.flushdb()
+  })
+
+  after(() => {
+    app.close()
+    db.quit()
+  })
 
   describe('POST /user', () => {
 
@@ -35,10 +35,10 @@ describe('User REST API', () => {
           done()
         })
         .catch((err) => {
-           throw err
+          throw err
         })
     })
-    
+
     it('pass wrong parameters', (done) => {
       const user = {
         firstname: 'Sergei',
@@ -54,25 +54,13 @@ describe('User REST API', () => {
           done()
         })
         .catch((err) => {
-           throw err
+          throw err
         })
     })
   })
 
-  describe('GET /user', ()=> {
-    const username = 'sergkudinov';
-    db.hgetall(username, (err, user) => {
-      if (err) {
-        done(err); // Handle the error
-      } else if (!user) {
-        done(new Error("User not found")); // Handle the case when the user is not found
-      } else {
-        // Perform assertions based on the 'user' data
-        chai.expect(user).to.have.property('username', username);
-        // Add more assertions here
-        done(); // Signal that the test is complete
-      }
-    });
-    // TODO Create test for the get method
-  })
+  // describe('GET /user', ()=> {
+  //   // TODO Create test for the get method
+  // })
+
 })
