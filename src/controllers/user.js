@@ -19,12 +19,10 @@ module.exports = {
   },
   get: (username, callback) => {
     db.hgetall(username, (err, user) => {
-      if (err) {
-        return callback(err, null);
-      }
 
       if (!user) {
-        return callback(new Error("User not found"), null);
+        const err = new Error('User not found');
+        return callback(err, null);
       }
       user.username = username;
       callback(null, user);
