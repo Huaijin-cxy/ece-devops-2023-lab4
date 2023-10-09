@@ -42,7 +42,6 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
 
-     # Setup Redis configuration for CI
     - name: Configure Redis for CI
       run: |
         echo '{
@@ -52,4 +51,4 @@ jobs:
           }
         }' > conf/custom.json
     
-      - run: npm test
+    - run: npm test
