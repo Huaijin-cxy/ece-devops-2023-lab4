@@ -6,16 +6,16 @@ const db = require('../src/dbClient')
 chai.use(chaiHttp)
 
 describe('User REST API', () => {
-  
-    beforeEach(() => {
-      // Clean DB before each test
-      db.flushdb()
-    })
-    
-    after(() => {
-      app.close()
-      db.quit()
-    })
+
+  beforeEach(() => {
+    // Clean DB before each test
+    db.flushdb()
+  })
+
+  after(() => {
+    app.close()
+    db.quit()
+  })
 
   describe('POST /user', () => {
 
@@ -35,10 +35,10 @@ describe('User REST API', () => {
           done()
         })
         .catch((err) => {
-           throw err
+          throw err
         })
     })
-    
+
     it('pass wrong parameters', (done) => {
       const user = {
         firstname: 'Sergei',
@@ -54,25 +54,64 @@ describe('User REST API', () => {
           done()
         })
         .catch((err) => {
-           throw err
+          throw err
         })
     })
   })
 
-  describe('GET /user', ()=> {
-    const username = 'sergkudinov';
-    db.hgetall(username, (err, user) => {
-      if (err) {
-        done(err); // Handle the error
-      } else if (!user) {
-        done(new Error("User not found")); // Handle the case when the user is not found
-      } else {
-        // Perform assertions based on the 'user' data
-        chai.expect(user).to.have.property('username', username);
-        // Add more assertions here
-        done(); // Signal that the test is complete
-      }
+  // describe('GET /user', ()=> {
+  //   // TODO Create test for the get method
+  // })
+
+  describe('GET /user', () => {
+    it('successfully get user', (done) => {
+      const user = {
+        username: 'sergkudinov',
+        firstname: 'Sergei',
+        lastname: 'Kudinov'
+      };
+
+      // Create a user using a POST request
+      chai.request(app)
+        .post('/user')
+        .send(user)
+        .then((res) => {
+          chai.expect(res).to.have.status(201);
+
+          // Now, retrieve the created user using a GET request
+          chai.request(app)
+            .get(`/user/${user.username}`)
+            .then((res) => {
+              chai.expect(res).to.have.status(200);
+              chai.expect(res.body.status).to.equal('success');
+              chai.expect(res.body.msg.username).to.equal(user.username);
+              chai.expect(res.body.msg.firstname).to.equal(user.firstname);
+              chai.expect(res.body.msg.lastname).to.equal(user.lastname);
+              done();
+            })
+            .catch((err) => {
+              throw err;
+            });
+        })
+        .catch((err) => {
+          throw err;
+        });
     });
-    // TODO Create test for the get method
-  })
+
+    it('cannot get a user when it does not exist', (done) => {
+      const nonExistentUsername = 'nonexistentuser';
+      chai.request(app)
+        .get(`/user/${nonExistentUsername}`)
+        .then((res) => {
+          chai.expect(res).to.have.status(404);
+          chai.expect(res.body.status).to.equal('error');
+          chai.expect(res.body.msg).to.equal('User not found');
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
+
 })

@@ -7,7 +7,7 @@ userRouter
   .post('/', (req, resp) => {
     userController.create(req.body, (err, res) => {
       let respObj
-      if(err) {
+      if (err) {
         respObj = {
           status: "error",
           msg: err.message
@@ -25,25 +25,27 @@ userRouter
     // TODO Create get method API
     const user_name = req.params.username;
 
-  // Call the userController's get method to retrieve the user by username
-  userController.get(user_name, (err, user) => {
-    let respObj;
-    
-    if (err) {
+    // Call the userController's get method to retrieve the user by username
+    userController.get(user_name, (err, user) => {
+      let respObj;
+
+      if (err) {
+        respObj = {
+          status: "error",
+          msg: err.message
+        };
+        // Check if the error message is "User not found" and set the status code to 404, otherwise 400
+        const statusCode = err.message === "User not found" ? 404 : 400;
+        return resp.status(statusCode).json(respObj);
+      }
+
       respObj = {
-        status: "error",
-        msg: err.message
+        status: "success",
+        msg: user
       };
-      return resp.status(400).json(respObj);
-    }
-    
-    respObj = {
-      status: "success",
-      msg: user
-    };
-    
-    resp.status(200).json(respObj);
-  });
+
+      resp.status(200).json(respObj);
+    });
   })
-  
+
 module.exports = userRouter

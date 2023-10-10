@@ -3,7 +3,7 @@ const db = require('../dbClient')
 module.exports = {
   create: (user, callback) => {
     // Check parameters
-    if(!user.username)
+    if (!user.username)
       return callback(new Error("Wrong user parameters"), null)
     // Create User schema
     const userObj = {
@@ -19,14 +19,12 @@ module.exports = {
   },
   get: (username, callback) => {
     db.hgetall(username, (err, user) => {
-      if (err) {
+
+      if (!user) {
+        const err = new Error('User not found');
         return callback(err, null);
       }
-      
-      if (!user) {
-        return callback(new Error("User not found"), null);
-      }
-      
+      user.username = username;
       callback(null, user);
     });
     // TODO create this method
